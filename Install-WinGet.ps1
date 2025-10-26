@@ -27,6 +27,8 @@ $maxRetries = 3
 try {
     # Ensure NuGet Package Provider is installed
     if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
+        Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+        Write-Host "Installing NuGet Package Provider..."
         Install-PackageProvider -Name NuGet -Force | Out-Null
     }
 
