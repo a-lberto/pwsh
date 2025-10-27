@@ -6,16 +6,14 @@
     This script ensures the system is prepared by checking for Admin rights and internet connectivity.
     It then installs or updates the 'Microsoft.WinGet.Client' module from the PSGallery.
     Finally, it attempts to repair the WinGet installation, with a retry mechanism for robustness.
-	Tested on Windows 10 IoT Enterprise LTSC.
-	Base commands from https://learn.microsoft.com/en-us/windows/package-manager/winget/
-	
+    Tested on Windows 10 IoT Enterprise LTSC.
+    Base commands from https://learn.microsoft.com/en-us/windows/package-manager/winget/
 #>
 
 # --- Initial Checks ---
 # Check for internet connection.
 if (-not (Test-Connection -ComputerName "8.8.8.8" -Count 1 -Quiet)) {
     Write-Error "Error: Internet connection not found. Please connect to the internet and try again."
-    exit 1
 }
 
 # --- Configuration ---
@@ -26,11 +24,20 @@ $maxRetries = 3
 # --- Module Installation ---
 try {
     # Ensure NuGet Package Provider is installed
-    if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
-        Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-        Write-Host "Installing NuGet Package Provider..."
-        Install-PackageProvider -Name NuGet -Force | Out-Null
+    $packageProviders = Get-PackageProvider | select name
+    if(!($packageProviders.name -contains "nuget")){
+        Write-Host "NuGet not Found. Installing Package Provider"
+        Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.208 -Force -Scope CurrentUser
     }
+    else{Write-Host "NuGet Module Found"}
+
+    if($packageProviders -contains "nuget"){
+        write-host "NuGet found. Importing into current session."
+        Import-PackageProvider -Name NuGet -RequiredVersion 2.8.5.208 -Force -Scope CurrentUser
+    }
+    else{
+        write-host NuGet Module Not Found
+    } 
 
     # Check if the module is installed and install if missing
     if (-not (Get-Module -ListAvailable -Name $moduleName)) {
@@ -71,5 +78,4 @@ if ($success) {
 }
 else {
     Write-Error "Failure: Could not repair WinGet Package Manager after $maxRetries attempts."
-    exit 1
 }
