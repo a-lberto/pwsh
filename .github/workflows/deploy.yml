@@ -5,6 +5,7 @@ on:
     paths:
       - 'alias.yml'
       - '**.ps1'
+  workflow_dispatch:
 
 jobs:
   deploy:
