@@ -1,5 +1,7 @@
 # alias.yml
 # Format: shortname: src/Script.ps1
 wg: src/Install-WinGet.ps1
+fwg: src/Find-WinGet.ps1
 tree: src/Show-Tree.ps1
 touch: src/Touch-File.ps1
+refreshenv: src/Refresh-Env.ps1
