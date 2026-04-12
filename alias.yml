@@ -2,3 +2,4 @@
 # Format: shortname: src/Script.ps1
 wg: src/Install-WinGet.ps1
 tree: src/Show-Tree.ps1
+touch: src/Touch-File.ps1
